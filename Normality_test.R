@@ -1,6 +1,7 @@
 ### This script is to test for data normality
 library(tidyverse)
 library(cowplot)
+library(moments)
 ### each person set their own working directory - setwd("/Users/sean/Desktop/Moss_analysis/ENVR400-Moss")
 kits_data <- read.csv("DATA COLLECTION - Cleaned Kits Values.csv", stringsAsFactors = TRUE) %>% 
   mutate(neighbourhood = "kits")
@@ -26,7 +27,9 @@ summarized_data <- all_data %>%
             road_side = first(road_side),
             mean_bryo_cover = mean(bryo_cover, na.rm = TRUE),
             mean_lichen_cover = mean(lichen_cover, na.rm = TRUE),
-            mean_species_count = mean(species, na.rm = TRUE))
+            mean_species_count = mean(species, na.rm = TRUE)) %>% 
+  mutate(log_bryo_cover = log(mean_bryo_cover+1),# plus one for 0s in data
+         sqrt_lichen_cover = sqrt(mean_lichen_cover)) 
 write_csv(summarized_data, "combined_summarized_data.csv")
 
 
@@ -68,4 +71,31 @@ root_transformed_lichen_hist <- ggplot(summarized_data, aes(x = (mean_lichen_cov
 
 final_histogram_plot <- plot_grid(log_transformed_Bryo_histogram, root_transformed_lichen_hist, species_histogram, ncol = 1)
 final_histogram_plot
-ggsave("Figures/final_histograms.png", plot = initial_histogram_plot, height = 8, width = 5)
+ggsave("Figures/final_histograms.png", plot = final_histogram_plot, height = 8, width = 5)
+
+
+### Make QQ Plots
+# For bryo
+qqnorm(summarized_data$log_bryo_cover,
+       main = "Normal Q-Q Plot for Log(Bryophyte Cover + 1)")
+qqline(summarized_data$log_bryo_cover) #Not normal!!
+
+# For lichen
+qqnorm(summarized_data$sqrt_lichen_cover,
+       main = "Normal Q-Q Plot for Square Root of Lichen Cover")
+qqline(summarized_data$sqrt_lichen_cover) #Pretty Good! - Definitely adequate for linear model
+
+#for species count
+qqnorm(summarized_data$mean_species_count,
+       main = "Normal Q-Q Plot for Species Count")
+qqline(summarized_data$mean_species_count) #Definitely Normal
+
+##### D/Agostino Pearson Test Normality Test
+agostino.test(summarized_data$log_bryo_cover) 
+# p=0.0001293 <- low suggests non-normaility
+agostino.test(summarized_data$sqrt_lichen_cover)  #p=0.0386 still slightly too low
+
+agostino.test(summarized_data$mean_species_count) #p=0.4794 still normal
+
+
+
