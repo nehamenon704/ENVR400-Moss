@@ -471,6 +471,10 @@ tree_id,road_side,aspect,low_bryo,low_lichen,low_species,med_bryo,med_lichen,med
 112266,NA Cut,East,,,,,,,,,
 112266,NA Cut,South,,,,,,,,,
 112266,NA Cut,West,,,,,,,,,
+166808,SR,North,0,24,3,0,24,3,0,12,3
+166808,SR,East,0,22,2,0,25,2,0,25,2
+166808,SR,South,0,22,2,0,25,2,0,25,2
+166808,SR,West,0,22,3,0,25,2,0,25,2
 118681,NR,North,0,23,3,0,24,3,0,7,3
 118681,NR,East,0,20,2,0,23,3,0,24,3
 118681,NR,South,6,10,3,0,20,3,0,22,3
