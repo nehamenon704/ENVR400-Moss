@@ -64,6 +64,10 @@ ggplot(data_raw, aes(x=bryo_cover_percent)) +
   geom_histogram() +
   facet_wrap(~height, ncol=1)
 
+ggplot(data_raw, aes(x=lichen_cover_percent)) +
+  geom_histogram() +
+  facet_wrap(~height, ncol=1)
+
 
 test_model_bryo <- glmer.nb(bryo_cover~quadrat_side+height+ (1|tree_id), data = data_raw)
 summary(test_model_bryo)
@@ -72,19 +76,40 @@ summary(test_model_bryo)
 data_raw$height <- factor(data_raw$height, levels = c("low", "med", "high"))
 test_model_bryo <- glmer.nb(bryo_cover~quadrat_side+height+ (1|tree_id), data = data_raw) 
 summary(test_model_bryo)
+test_model_lichen <- glmer.nb(lichen_cover_percent~quadrat_side+height+ (1|tree_id), data = data_raw) 
+summary(test_model_lichen)
 
-#Plots for bryo
-ggplot(filter(data_raw, quadrat_side != is.na(quadrat_side)), aes(x=quadrat_side, y = bryo_cover_percent)) +
-  stat_summary(fun = "mean", geom = "bar", fill = "steelblue") +
-  stat_summary(fun.data = "mean_se", geom="errorbar", width = 0.15) +
-  labs(x="Side of tree",
+######Plots
+# For the plots, I want to summarize by tree ID in advance
+#First for height
+#First bryo
+## Jitter plot below
+data_raw %>% 
+  group_by(tree_id, height) %>% 
+  summarize(mean_moss_percent = mean(bryo_cover_percent, na.rm = TRUE),
+            mean_lichen_percent = mean(lichen_cover_percent, na.rm = TRUE),
+            neighbourhood = first(neighbourhood)) %>% 
+  ggplot(aes(x=height, y = mean_moss_percent)) +
+  geom_jitter(width = 0.2, alpha = 0.15) +
+  stat_summary(fun = "mean", geom = "point", colour = "red", size =2.5) +
+  labs(x="Quadrat height",
        y = "Percent cover of bryophytes") +
-  theme_bw() +
+  geom_segment(x=2,y=85,xend=3,yend=85) +
+  geom_segment(x=1,y=95,xend=3,yend=95) +
+  geom_segment(x=1, y=75, xend=2,yend=75) +
+  geom_text(x=2,y=98,label="P=0.0012") + 
+  geom_text(x=2.5,y=88,label="P=0.048") +
+  geom_text(x=1.5,y=78, label = "P=0.17") +
+  theme_classic() +
   theme(axis.text.x = element_text(margin = margin(t=2, b=5)),
         axis.text.y = element_text(margin = margin(l=5, r=2)))
-
-
-ggplot(data_raw, aes(x=height, y = bryo_cover_percent)) +
+## Bar plot below
+data_raw %>% 
+  group_by(tree_id, height) %>% 
+  summarize(mean_moss_percent = mean(bryo_cover_percent, na.rm = TRUE),
+            mean_lichen_percent = mean(lichen_cover_percent, na.rm = TRUE),
+            neighbourhood = first(neighbourhood)) %>% 
+  ggplot(aes(x=height, y = mean_moss_percent)) +
   stat_summary(fun = "mean", geom = "bar", fill = "steelblue") +
   stat_summary(fun.data = "mean_se", geom="errorbar", width = 0.15) +
   labs(x="Quadrat height",
@@ -95,6 +120,32 @@ ggplot(data_raw, aes(x=height, y = bryo_cover_percent)) +
   geom_text(x=2,y=20,label="P=0.0012") +
   geom_text(x=1.5,y=18,label="P=0.048") +
   theme_classic() +
+  theme(axis.text.x = element_text(margin = margin(t=2, b=5)),
+        axis.text.y = element_text(margin = margin(l=5, r=2)))
+
+#Now lichen
+## Jitter plot below
+data_raw %>% 
+  group_by(tree_id, height) %>% 
+  summarize(mean_moss_percent = mean(bryo_cover_percent, na.rm = TRUE),
+            mean_lichen_percent = mean(lichen_cover_percent, na.rm = TRUE),
+            neighbourhood = first(neighbourhood)) %>% 
+  ggplot(aes(x=height, y = mean_lichen_percent)) +
+  geom_jitter(width = 0.2, alpha = 0.15) +
+  stat_summary(fun = "mean", geom = "point", colour = "red", size =2.5) +
+  labs(x="Quadrat height",
+       y = "Percent cover of lichen") +
+  theme_classic() +
+  theme(axis.text.x = element_text(margin = margin(t=2, b=5)),
+        axis.text.y = element_text(margin = margin(l=5, r=2)))
+
+#now road side
+ggplot(filter(data_raw, quadrat_side != is.na(quadrat_side)), aes(x=quadrat_side, y = bryo_cover_percent)) +
+  stat_summary(fun = "mean", geom = "bar", fill = "steelblue") +
+  stat_summary(fun.data = "mean_se", geom="errorbar", width = 0.15) +
+  labs(x="Side of tree",
+       y = "Percent cover of bryophytes") +
+  theme_bw() +
   theme(axis.text.x = element_text(margin = margin(t=2, b=5)),
         axis.text.y = element_text(margin = margin(l=5, r=2)))
 
