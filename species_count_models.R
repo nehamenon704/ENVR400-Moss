@@ -70,6 +70,17 @@ road_genus_plot
 ggsave("Figures/road_genus_diversity.jpg", road_genus_plot, width = 8,
        height = 5.5)
 
+## Now i want to combine the two above plots
+final_species_plot <- ggplot(data, aes(x=GENUS_NAME, y=mean_species_count, fill = Road)) +
+  stat_summary(fun = mean, geom = "bar", position = "dodge") +
+  stat_summary(fun.data = "mean_se", geom = "errorbar", 
+               position = position_dodge(width =0.9), width = 0.2) +
+  facet_wrap(~NEIGHBOURHOOD_NAME) +
+  labs(x="Tree Genus",
+       y="Mean Species Count Per Quadrat",
+       fill = "Road Traffic Level") +
+  theme_bw()
+final_species_plot
 
 #### Mean differences
 data %>% 
