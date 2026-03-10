@@ -38,19 +38,22 @@ bryo_cover_histogram <- ggplot(summarized_data, aes(x=mean_bryo_cover)) +
   geom_histogram()+ #STRONG RIGHT SKEW
   labs(x = "Mean Bryophyte Percent Cover",
        y = "Count") +
+  ylim(0,85)+
   theme_classic()
 lichen_cover_histogram <- ggplot(summarized_data, aes(x = mean_lichen_cover)) +
   geom_histogram() + #SLIGHT RIGHT SKEW
   labs(x = "Mean Lichen Percent Cover",
        y = "Count") +
+  ylim(0,85)+
   theme_classic()
 species_histogram <- ggplot(summarized_data, aes(x = mean_species_count)) +
   geom_histogram() + #NORMAL
-  labs(x = "Mean Species Count",
+  labs(x = "Mean 'Visually Distinct Taxa' Count",
        y = "Count") +
+  ylim(0,85)+
   theme_classic()
 
-initial_histogram_plot <- plot_grid(bryo_cover_histogram, lichen_cover_histogram, species_histogram, ncol = 1)
+initial_histogram_plot <- plot_grid(bryo_cover_histogram, lichen_cover_histogram, species_histogram, ncol = 3, labels = c('A', 'B', 'C'))
 initial_histogram_plot
 ggsave("Figures/initial_histograms.png", plot = initial_histogram_plot, height = 8, width = 5)
 

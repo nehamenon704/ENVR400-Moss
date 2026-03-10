@@ -49,6 +49,7 @@ summary(lichen_model_nb_interactive)
 #Other possibility is full interactive model - maybe makes more sense
 lichen_model_nb_interactive_full <- glm.nb(mean_lichen_cover~GENUS_NAME*neighbourhood_name*Road, 
                                       data = final_data)
+par(mfrow=c(1,2))
 plot(lichen_model_nb_interactive_full) ## A lot better than previous model I think
 lichen_model_nb_interactive_full$deviance/lichen_model_nb_interactive_full$df.residual #Good
 summary(lichen_model_nb_interactive_full)
