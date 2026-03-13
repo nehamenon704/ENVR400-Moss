@@ -47,12 +47,13 @@ summary(lichen_model_nb_interactive)
 
 
 #Other possibility is full interactive model - maybe makes more sense
-lichen_model_nb_interactive_full <- glm.nb(mean_lichen_cover~GENUS_NAME*neighbourhood_name*Road, 
+final_data$GENUS_NAME <- fct_relevel(final_data$GENUS_NAME, "ACER")
+lichen_model_nb_interactive_full_ACER <- glm.nb(mean_lichen_cover~GENUS_NAME*neighbourhood_name*Road, 
                                       data = final_data)
 par(mfrow=c(1,2))
-plot(lichen_model_nb_interactive_full) ## A lot better than previous model I think
-lichen_model_nb_interactive_full$deviance/lichen_model_nb_interactive_full$df.residual #Good
-summary(lichen_model_nb_interactive_full)
+plot(lichen_model_nb_interactive_full_ACER) ## A lot better than previous model I think
+lichen_model_nb_interactive_full_ACER$deviance/lichen_model_nb_interactive_full_ACER$df.residual #Good
+summary(lichen_model_nb_interactive_full_ACER)
 #Fagus genus is significant - P=8.73e-08
 #Road type significant - P=0.00764
 #Interaction between neighbourhood and fagus sig. P=1.79e-05
@@ -60,3 +61,39 @@ summary(lichen_model_nb_interactive_full)
 #Interaction between neighbourhood and road type sig. P=0.04377 (i can't think of a plausible reason for this)
 
 ###THis is probably the model we should use
+
+## SOme plots
+ggplot(final_data, aes(x=GENUS_NAME, y=mean_lichen_cover)) +
+  geom_jitter(position = position_jitter(width = 0.1)) +
+  geom_violin(alpha =0.5) +
+  stat_summary(fun = mean, geom = "point", size = 3, colour = "black") +
+  facet_wrap(~Road)
+
+ggplot(final_data, aes(x=GENUS_NAME, y=mean_lichen_cover)) +
+  geom_jitter(position = position_jitter(width = 0.1)) +
+  geom_violin(alpha =0.5) +
+  stat_summary(fun = mean, geom = "point", size = 3, colour = "black")
+
+ggplot(final_data, aes(x=neighbourhood_name, y=mean_lichen_cover)) +
+  geom_jitter(position = position_jitter(width = 0.1)) +
+  geom_violin(alpha =0.5) +
+  stat_summary(fun = mean, geom = "point", size = 3, colour = "black")
+
+ggplot(final_data, aes(x=Road, y=mean_lichen_cover)) +
+  geom_jitter(position = position_jitter(width = 0.1)) +
+  geom_violin(alpha =0.5) +
+  stat_summary(fun = mean, geom = "point", size = 3, colour = "black")
+final_data %>% group_by(Road) %>% summarize(mean = mean(mean_lichen_cover, na.rm = TRUE))
+
+#Run model with different order of factor levels for tree genus
+final_data$GENUS_NAME <- fct_relevel(final_data$GENUS_NAME, "CARPINUS")
+lichen_model_nb_interactive_full_CARPINUS <- glm.nb(mean_lichen_cover~GENUS_NAME*neighbourhood_name*Road, 
+                                           data = final_data)
+summary(lichen_model_nb_interactive_full_CARPINUS)
+
+final_data$GENUS_NAME <- fct_relevel(final_data$GENUS_NAME, "FAGUS")
+lichen_model_nb_interactive_full_FAGUS <- glm.nb(mean_lichen_cover~GENUS_NAME*neighbourhood_name*Road, 
+                                                    data = final_data)
+summary(lichen_model_nb_interactive_full_FAGUS)
+
+
