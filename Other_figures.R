@@ -62,4 +62,3 @@ ggsave("Figures/acer_treediversity_plot.png", acer_treediversity_plot, width = 6
 
 ###Now to do the same thing for neighbourhood
 
-  
