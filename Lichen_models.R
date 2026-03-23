@@ -2,6 +2,9 @@ library(tidyverse)
 library(MASS)
 library(emmeans)
 library(car)
+library(broom)
+
+
 ## Read in data
 final_data <- read.csv("final_data.csv", stringsAsFactors = TRUE) %>% 
   mutate(sqrt_lichen_cover = sqrt(mean_lichen_cover))
@@ -65,4 +68,30 @@ Anova(lichen_model_nb_interactive_full_ACER, type = "II")
 comps_full <- emmeans(lichen_model_nb_interactive_full_ACER, specs = ~ GENUS_NAME:Road:neighbourhood_name, adjust = "Tukey")
 contrast(comps_full, method = "pairwise", by = "GENUS_NAME")
 
+
+
+
+###THis is probably the model we should use
+
+
+bryo_model_nb_interactive_full <- glm.nb(mean_bryo_cover~GENUS_NAME*neighbourhood_name*Road, 
+                                           data = final_data)
+
+Anova(bryo_model_nb_interactive_full, type = "II")
+comps_full_bryo <- emmeans(bryo_model_nb_interactive_full, specs = ~ GENUS_NAME:Road:neighbourhood_name, adjust = "Tukey")
+contrast(comps_full_bryo, method = "pairwise", by = "GENUS_NAME")
+
+
+par(mfrow=c(2,2))
+plot(bryo_model_nb_interactive_full) ## A lot better than previous model I think
+bryo_model_nb_interactive_full$deviance/bryo_model_nb_interactive_full$df.residual #Good
+summary(bryo_model_nb_interactive_full)
+tidy(bryo_model_nb_interactive_full, exponentiate=TRUE)
+
+#bryo_model_poisson_interactive_full <- glm(mean_bryo_cover~GENUS_NAME*neighbourhood_name*Road, 
+ #                                        data = final_data, family=poisson)
+
+#ztidy(bryo_model_poisson_interactive_full, exponentiate=TRUE)
+#plot(bryo_model_poisson_interactive_full)
+#bryo_model_poisson_interactive_full$deviance/bryo_model_poisson_interactive_full$df.residual 
 
