@@ -61,12 +61,12 @@ plot(lichen_model_nb_interactive_full_ACER) ## A lot better than previous model 
 lichen_model_nb_interactive_full_ACER$deviance/lichen_model_nb_interactive_full_ACER$df.residual #Good
 summary(lichen_model_nb_interactive_full_ACER)## Not useful for out purposes
 
-#Run a type II anova to compare boradly scross factor levels
+#Run a type II anova to compare broadly across factor levels
 Anova(lichen_model_nb_interactive_full_ACER, type = "II")
 
 ##Want to try pairwise comparisons
 comps_full <- emmeans(lichen_model_nb_interactive_full_ACER, specs = ~ GENUS_NAME:Road:neighbourhood_name, adjust = "Tukey")
-contrast(comps_full, method = "pairwise", by = "GENUS_NAME")
+contrast(comps_full, method = "pairwise")
 
 
 

@@ -54,17 +54,29 @@ neighbourhood_lichen_plot <- ggplot(final_data, aes(x=NEIGHBOURHOOD_NAME, y=mean
   theme(legend.position = "none")
 ggsave("Figures/lichen_plot2.png", neighbourhood_lichen_plot, units = "mm", width = 90, height = 120)
 
+#With opposite facet wrap
+road_genus_neighbourhood_plot_2 <- ggplot(final_data, 
+                                        aes(x=GENUS_NAME, y = mean_lichen_cover/25*100, fill = Road)) +
+  stat_summary(geom = "bar", fun = "mean", position = "dodge") +
+  stat_summary(geom = "errorbar", fun.data = "mean_se", position = position_dodge(width = 0.9), width = 0.2) +
+  labs(y = "Percent cover of lichen (%)",
+       x = "Tree genus", 
+       fill = "Road traffic level") +
+  facet_wrap(~NEIGHBOURHOOD_NAME, ncol = 1) +
+  geom_text(data = plot_annotations, mapping = aes(x=GENUS_NAME, y = height, label = label),
+            size = 6) +
+  theme_bw() +
+  coord_cartesian(ylim = c(0,66)) +
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.75,0.91),
+        legend.background = element_rect(colour = "black"))
+road_genus_neighbourhood_plot_2
 
+#Lets try to combine these plots into one
+neighbourhood_spaced_plot <- plot_grid(neighbourhood_lichen_plot, NULL, ncol = 1)
+neighbourhood_spaced_plot
+combined_lichen_plot <- plot_grid(neighbourhood_spaced_plot, road_genus_neighbourhood_plot_2,
+                                  labels = c("A","B"))
+combined_lichen_plot
 
-#by road
-ggplot(final_data, aes(x=Road, y=mean_lichen_cover)) +
-  stat_summary(fun = "mean", geom = "bar")
-
-#by genus
-ggplot(final_data, aes(x=GENUS_NAME, y=mean_lichen_cover)) +
-  stat_summary(fun = "mean", geom = "bar")
-
-
-final_data %>% 
-  group_by(NEIGHBOURHOOD_NAME) %>% 
-  summarize(mean = mean(mean_lichen_cover, na.rm = TRUE))
+ggsave("Figures/combined_lichen_plot.png", combined_lichen_plot, units = "cm", width = 18, height = 18)
