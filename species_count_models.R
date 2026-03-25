@@ -45,7 +45,29 @@ qqline(residuals(species_lm_full_inter))
 comps_full_species <- emmeans(species_lm_full_inter, specs = ~ GENUS_NAME:Road:neighbourhood_name, adjust = "Tukey")
 contrast(comps_full_species, method = "pairwise")
 
+comps_genus_only <- emmeans(species_lm_full_inter, specs = ~ GENUS_NAME, adjust = "Tukey")
+contrast(comps_genus_only, method = "pairwise")
+
 ## Plots
+
+genus_species_plot <- ggplot(final_data, aes(x=GENUS_NAME, y=mean_species_count, fill = GENUS_NAME)) + 
+  stat_summary(fun = "mean", geom = "bar") +
+  stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.2) +
+  labs(x="Tree genus", y= "Mean 'visually distinct taxa' per quadrat") +
+  theme_bw()+
+  annotate(geom = "text", x=1,y=1.9,label = "a", size = 5)+
+  annotate(geom = "text", x=2,y=1.87,label = "a", size = 5)+
+  annotate(geom = "text", x=3,y=1.5,label = "b", size = 5)+
+  annotate(geom = "text", x=4,y=1.7,label = "ab", size = 5)+
+  theme(legend.position = "none",
+        axis.text = element_text(size = 13),
+        axis.title = element_text(size = 15))
+genus_species_plot
+
+ggsave("Figures/genus_species_plot.png", genus_species_plot, units = "cm", width = 12, height = 12)
+
+
+
 ###### NEED TO UPDATE COLOURS
 road_neighbourhood_plot <- ggplot(data, aes(x=Road, y=mean_species_count, fill = Road)) +
   stat_summary(fun = mean, geom = "bar") +

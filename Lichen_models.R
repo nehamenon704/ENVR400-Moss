@@ -66,7 +66,7 @@ Anova(lichen_model_nb_interactive_full_ACER, type = "II")
 
 ##Want to try pairwise comparisons
 comps_full <- emmeans(lichen_model_nb_interactive_full_ACER, specs = ~ GENUS_NAME:Road:neighbourhood_name, adjust = "Tukey")
-contrast(comps_full, method = "pairwise")
+contrast(comps_full, method = "pairwise", by = "GENUS_NAME")
 
 
 
@@ -80,6 +80,7 @@ bryo_model_nb_interactive_full <- glm.nb(mean_bryo_cover~GENUS_NAME*neighbourhoo
 Anova(bryo_model_nb_interactive_full, type = "II")
 comps_full_bryo <- emmeans(bryo_model_nb_interactive_full, specs = ~ GENUS_NAME:Road:neighbourhood_name, adjust = "Tukey")
 contrast(comps_full_bryo, method = "pairwise", by = "GENUS_NAME")
+contrast(comps_full_bryo, method = "pairwise", by = "neighbourhood_name")
 
 
 par(mfrow=c(2,2))
@@ -94,4 +95,14 @@ tidy(bryo_model_nb_interactive_full, exponentiate=TRUE)
 #ztidy(bryo_model_poisson_interactive_full, exponentiate=TRUE)
 #plot(bryo_model_poisson_interactive_full)
 #bryo_model_poisson_interactive_full$deviance/bryo_model_poisson_interactive_full$df.residual 
+
+final_data %>% 
+  group_by(NEIGHBOURHOOD_NAME) %>% 
+  summarize(mean_lichen = mean(mean_lichen_cover, na.rm = TRUE)/25*100,
+            mean_bryo = mean(mean_bryo_cover, na.rm = TRUE)/25*100)
+
+final_data %>% 
+  group_by(Road)%>% 
+  summarize(mean_lichen = mean(mean_lichen_cover, na.rm = TRUE)/25*100,
+            mean_bryo = mean(mean_bryo_cover, na.rm = TRUE)/25*100)
 
